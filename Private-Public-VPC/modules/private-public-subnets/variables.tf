@@ -13,3 +13,15 @@ variable "subnet_count" {
     type        = string
     description = "The number of public and private subnets to create"
 }
+
+variable "public_subnet_tags" {
+    type        = map 
+    description = "A map of tags to be applied to all public subnets"
+    default     = {}
+}
+
+variable "private_subnet_tags" {
+    type        = map 
+    description = "A map of tags to be applied to all private subnets"
+    default     = {}
+}

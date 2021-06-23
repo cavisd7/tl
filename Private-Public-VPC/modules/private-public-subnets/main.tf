@@ -15,9 +15,7 @@ resource "aws_subnet" "public_subnet" {
     cidr_block          = cidrsubnet(var.vpc_cidr, 8, count.index)
     availability_zone   = data.aws_availability_zones.azs.names[count.index]
 
-    tags = {
-        Name = "Public ${count.index}"
-    }
+    tags                = merge({ Name = "Public ${count.index}" }, var.public_subnet_tags)
 }
 
 resource "aws_eip" "nat_eip" {
@@ -58,16 +56,13 @@ resource "aws_subnet" "private_subnet" {
     cidr_block          = cidrsubnet(var.vpc_cidr, 8, count.index + var.subnet_count)
     availability_zone   = data.aws_availability_zones.azs.names[count.index]
 
-    tags = {
-        Name = "Private ${count.index}"
-        //"kubernetes.io/cluster/${var.eks_cluster_name}" = "shared"
-    }
+    tags                = merge({ Name = "Private ${count.index}" }, var.public_subnet_tags)
 }
 
 resource "aws_route_table" "private_rt" {
     count                   = var.subnet_count
 
-    vpc_id      = var.vpc_id
+    vpc_id                  = var.vpc_id
 }
 
 resource "aws_route" "private_route" {

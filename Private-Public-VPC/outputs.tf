@@ -3,6 +3,11 @@ output "vpc_id" {
     description = "The VPC id of the created VPC"
 }
 
+output "vpc_tags" {
+    value       = aws_vpc.vpc.tags_all
+    description = "A map of tags applied to the created VPC"
+}
+
 output "private_subnet_ids" {
     value       = module.private_public_subnets.private_subnet_ids
     description = "A list of created private subnet ids"
