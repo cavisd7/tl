@@ -24,7 +24,7 @@ resource "aws_eip" "nat_eip" {
 }
 
 resource "aws_nat_gateway" "ngw" {
-    count           = var.subnet_count
+    count           = var.multi_nat_gateway ? var.subnet_count : 1
 
     allocation_id   = aws_eip.nat_eip[count.index].id
     subnet_id       = aws_subnet.public_subnet[count.index].id
@@ -70,7 +70,7 @@ resource "aws_route" "private_route" {
 
     route_table_id          = aws_route_table.private_rt[count.index].id
     destination_cidr_block  = "0.0.0.0/0"
-    nat_gateway_id          = aws_nat_gateway.ngw[count.index].id
+    nat_gateway_id          = var.multi_nat_gateway ? aws_nat_gateway.ngw[count.index].id : aws_nat_gateway.ngw.id
 }
 
 resource "aws_route_table_association" "private_route_join" {

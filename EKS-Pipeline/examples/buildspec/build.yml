@@ -1,0 +1,14 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - docker --version
+  
+  build:
+    commands:
+      - docker build --tag $REPOSITORY_URI:$TAG .
+  
+  post_build:
+    commands:
+      - docker push $REPOSITORY_URI:$TAG
+      - kubectl apply -f my-config.yml

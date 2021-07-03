@@ -14,6 +14,12 @@ variable "subnet_count" {
     description = "The number of public and private subnets to create"
 }
 
+variable "multi_nat_gateway" {
+    type        = bool 
+    description = "Select true to create a NAT Gateway and associate with each private subnet created. Select false to create a single NAT Gateway that all private subnets will share."
+    default     = false
+}
+
 variable "public_subnet_tags" {
     type        = map 
     description = "A map of tags to be applied to all public subnets"
