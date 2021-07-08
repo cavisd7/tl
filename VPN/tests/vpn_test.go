@@ -10,24 +10,14 @@ import (
 func TestPrivatePublicVPC(t *testing.T) {
 	t.Parallel()
 
-	vpcID := "vpc-12345"
-
-	adminIPs := []string{
-		"0.0.0.0/0", 
-	}
-
-	publicSubnets := []string{
-		"subnet-12345", 
-		"subnet-12345", 
-	}
+	desiredCapacity := 2
 
 	tfOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples",
 		Vars: map[string]interface{}{
-			"vpc_id": vpcID, 
-			"admin_ips": adminIPs,
-			"public_subnets": publicSubnets,
+			"desired_capacity": desiredCapacity,
 		},
+		VarFiles: []string{"varfile.tfvars"},
 	})
 
 	defer terraform.Destroy(t, tfOptions)

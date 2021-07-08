@@ -1,6 +1,6 @@
 #!/bin/bash
 
 echo "Changing openvpn user password..."
-echo -e "changethispassword\nchangethispassword" | (passwd --stdin openvpn)
+chpasswd <<< "openvpn:changethispass"
 
 echo "Done"

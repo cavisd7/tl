@@ -154,7 +154,7 @@ resource "aws_autoscaling_group" "vpn" {
     }
 }
 
-/*data "aws_instances" "vpns" {
+data "aws_instances" "vpns" {
     filter {
         name   = "tag:Name"
         values = ["VPN"]
@@ -163,9 +163,33 @@ resource "aws_autoscaling_group" "vpn" {
     depends_on = [ aws_autoscaling_group.vpn ]
 }
 
-resource "aws_eip" "vpn" {
-    count = var.desired_capacity
+resource "aws_route53_health_check" "vpn" {
+    count               = var.desired_capacity
 
-    instance = data.aws_instances.vpns.ids[count.index]
-    vpc      = true
-}*/
+    ip_address          = data.aws_instances.vpns.public_ips[count.index]
+    port                = 443
+    type                = "HTTPS"
+    resource_path       = "/"
+    failure_threshold   = "5"
+    request_interval    = "30"
+
+    tags = {
+        Name = "VPN-${count.index}"
+    }
+}
+
+resource "aws_route53_record" "vpn" {
+    count           = var.desired_capacity
+
+    zone_id         = var.hosted_zone_id
+    name            = var.vpn_dns_name
+    type            = "A"
+    ttl             = "300"
+    records         = [data.aws_instances.vpns.public_ips[count.index]]
+    health_check_id = aws_route53_health_check.vpn[count.index].id
+    set_identifier  = "VPN-${count.index}"
+
+    weighted_routing_policy {
+        weight = 50    
+    }
+}

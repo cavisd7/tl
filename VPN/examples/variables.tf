@@ -21,10 +21,19 @@ variable "admin_ips" {
     //default     = [ "0.0.0.0/0" ]
 }
 
-/*variable "hosted_zone_id" {
+variable "client_ips" {
+    type        = list(string)
+    default     = [ "0.0.0.0/0" ]
+}
+
+variable "hosted_zone_id" {
     type        = string
     description = ""
-}*/
+}
+
+variable "vpn_dns_name" {
+    type        = string 
+}
 
 variable "public_subnets" {
     type        = list(string)
