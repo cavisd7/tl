@@ -8,6 +8,6 @@ module "private_public_subnets" {
     source              = "./modules/private-public-subnets"
 
     vpc_id              = aws_vpc.vpc.id
-    vpc_cidr            = var.vpc_cidr
+    //vpc_cidr            = var.vpc_cidr
     subnet_count        = var.subnet_count
 }

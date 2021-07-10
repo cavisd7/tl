@@ -22,13 +22,6 @@ resource "aws_iam_role" "node_group_role" {
     ]
 }
 
-/*data "template_file" "user_data" {
-    template = file("${path.module}/user-data/start.sh")
-    vars = {
-        aws_region                = "us-east-1"
-    }
-}*/
-
 resource "aws_security_group" "worker_node_sg" {
     name        = "eks_worker_node"
     description = "Rules for EKS worker node"
@@ -65,7 +58,7 @@ resource "aws_launch_template" "eks_node_template" {
 
     disable_api_termination = false
 
-    image_id = "ami-066e09c31d10b671c"
+    image_id = var.ami_id
 
     instance_type = "t2.micro"
 
@@ -79,9 +72,10 @@ resource "aws_launch_template" "eks_node_template" {
         enabled = false
     }
 
-    /*network_interfaces {
-        associate_public_ip_address = false
-    }*/
+    network_interfaces {
+        # true if ONLY using public EKS endpoint and not using a NAT gateway
+        associate_public_ip_address = (var.enable_public_endpoint && !var.enable_private_endpoint) && var.cluster_flavor == "public" ? true : var.map_public_ip
+    }
 
     vpc_security_group_ids = [aws_security_group.worker_node_sg.id]
 
@@ -93,7 +87,7 @@ resource "aws_launch_template" "eks_node_template" {
         }
     }
 
-    user_data = /*data.template_file.user_data.rendered*/filebase64("${path.module}/user-data/start.sh")
+    user_data = filebase64("${path.module}/user-data/setup.sh")
 }
 
 resource "aws_eks_node_group" "node_group" {
@@ -103,9 +97,9 @@ resource "aws_eks_node_group" "node_group" {
     subnet_ids      = var.subnet_ids
 
     scaling_config {
-        desired_size = 1
-        max_size     = 1
-        min_size     = 1
+        desired_size = var.desired_size
+        max_size     = var.max_size
+        min_size     = var.min_size
     }
 
     launch_template {

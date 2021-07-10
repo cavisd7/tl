@@ -2,20 +2,25 @@ data "aws_availability_zones" "azs" {
     state = "available"
 }
 
+data "aws_vpc" "selected" {
+    id  = var.vpc_id
+}
+
 resource "aws_internet_gateway" "igw" {
     vpc_id      = var.vpc_id
 }
 
 resource "aws_subnet" "public_subnet" {
-    count               = var.subnet_count
+    count                   = var.subnet_count
 
-    vpc_id              = var.vpc_id
+    vpc_id                  = var.vpc_id
     # Assuming a /16 VPC CIDR block, will result in a /24 CIDR block for the subnet
-    # Public subnets will have even numbers
-    cidr_block          = cidrsubnet(var.vpc_cidr, 8, count.index)
-    availability_zone   = data.aws_availability_zones.azs.names[count.index]
+    cidr_block              = cidrsubnet(data.aws_vpc.selected.cidr_block, var.cidr_newbits, count.index)
+    availability_zone       = data.aws_availability_zones.azs.names[count.index]
 
-    tags                = merge({ Name = "Public ${count.index}" }, var.public_subnet_tags)
+    map_public_ip_on_launch = var.should_map_public_ips
+
+    tags                    = merge({ Name = "Public ${count.index}" }, var.public_subnet_tags)
 }
 
 resource "aws_eip" "nat_eip" {
@@ -52,8 +57,7 @@ resource "aws_subnet" "private_subnet" {
 
     vpc_id              = var.vpc_id
     # Assuming a /16 VPC CIDR block, will result in a /24 CIDR block for the subnet
-    # Private subnets will have odd numbers
-    cidr_block          = cidrsubnet(var.vpc_cidr, 8, count.index + var.subnet_count)
+    cidr_block          = cidrsubnet(data.aws_vpc.selected.cidr_block, var.cidr_newbits, count.index + var.subnet_count)
     availability_zone   = data.aws_availability_zones.azs.names[count.index]
 
     tags                = merge({ Name = "Private ${count.index}" }, var.public_subnet_tags)
@@ -70,7 +74,7 @@ resource "aws_route" "private_route" {
 
     route_table_id          = aws_route_table.private_rt[count.index].id
     destination_cidr_block  = "0.0.0.0/0"
-    nat_gateway_id          = var.multi_nat_gateway ? aws_nat_gateway.ngw[count.index].id : aws_nat_gateway.ngw.id
+    nat_gateway_id          = var.multi_nat_gateway ? aws_nat_gateway.ngw[count.index].id : aws_nat_gateway.ngw[0].id
 }
 
 resource "aws_route_table_association" "private_route_join" {
