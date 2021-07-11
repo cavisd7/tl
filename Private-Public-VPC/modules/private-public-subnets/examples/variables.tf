@@ -3,15 +3,14 @@ variable "vpc_id" {
     description = "The id of VPC"
 }
 
-/*variable "vpc_cidr" {
+variable "public_subnet_count" {
     type        = string
-    description = "The CIDR block for the VPC"
-}*/ 
+    description = "The number of public subnets to create"
+}
 
-# Limit for available AZs
-variable "subnet_count" {
-    type        = string
-    description = "The number of public and private subnets to create"
+variable "private_subnet_count" {
+    type        = number
+    description = "The number of private subnets to create"
 }
 
 variable "multi_nat_gateway" {
@@ -40,4 +39,5 @@ variable "cidr_newbits" {
 variable "should_map_public_ips" {
     type        = bool
     default     = false
+    description = "Enable mapping of public IPs when instances are launched into public subnet only. Does not apply to private subnet"
 }

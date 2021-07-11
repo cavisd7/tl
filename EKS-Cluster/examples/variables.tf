@@ -3,6 +3,9 @@ variable "cluster_name" {
     description = "Name of EKS cluster"
 }
 
+# Public flavor will:
+#   Set give all worker node instances a public IP address via mapPublicIpOnLaunch on the subnet
+#   
 variable "cluster_flavor" {
     type        = string 
     description = "Flavor of cluster to deploy: private, public, or balanced"
@@ -14,10 +17,10 @@ variable "cluster_flavor" {
     } 
 }
 
-variable "subnet_ids" {
+/*variable "subnet_ids" {
     type        = list(string)
     description = "List of subnet ids where EKS will deploy worker nodes"
-}
+}*/
 
 variable "cluster_log_types" {
     type        = list(string)
@@ -58,3 +61,8 @@ variable "enable_public_endpoint" {
     default = false
 } 
 
+variable "allowed_eks_endpoint_cidrs" {
+    type        = list(string)
+    description = "List of CIDRs allowed to access EKS public endpoint. Must provide if EKS public endpoint is enabled. Otherwise an error will occur. This is designed to prevent default 0.0.0.0/0 access to public EKS endpoint."
+    default     = null
+} 

@@ -5,9 +5,9 @@ resource "aws_vpc" "vpc" {
 }
 
 module "private_public_subnets" {
-    source              = "./modules/private-public-subnets"
+    source                  = "./modules/private-public-subnets"
 
-    vpc_id              = aws_vpc.vpc.id
-    //vpc_cidr            = var.vpc_cidr
-    subnet_count        = var.subnet_count
+    vpc_id                  = aws_vpc.vpc.id
+    public_subnet_count     = var.public_subnet_count
+    private_subnet_count    = var.private_subnet_count
 }

@@ -10,12 +10,16 @@ import (
 func TestPrivatePublicVPC(t *testing.T) {
 	t.Parallel()
 
-	subnetCount := 2
+	publicSubnetCount := 2
+	privateSubnetCount := 4
+	multiNatGateway := true
 
 	tfOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 		TerraformDir: "../examples",
 		Vars: map[string]interface{}{
-			"subnet_count": subnetCount,
+			"public_subnet_count": publicSubnetCount,
+			"private_subnet_count": privateSubnetCount,
+			"multi_nat_gateway": multiNatGateway,
 		},
 		VarFiles: []string{"varfile.tfvars"},
 	})

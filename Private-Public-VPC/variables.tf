@@ -9,9 +9,15 @@ variable "vpc_tags" {
     default     = {}
 }
 
-variable "subnet_count" {
-    type        = string
-    description = "The number of public and private subnets to create"
+variable "public_subnet_count" {
+    type        = number
+    description = "The number of public subnets to create"
+    default     = 2
+}
+
+variable "private_subnet_count" {
+    type        = number
+    description = "The number of private subnets to create"
     default     = 2
 }
 

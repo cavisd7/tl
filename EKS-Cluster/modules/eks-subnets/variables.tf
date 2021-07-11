@@ -11,3 +11,13 @@ variable "cluster_flavor" {
         error_message = "Valid values for var cluster_flavor are (private, public, balanced)"
     } 
 }
+
+variable "vpc_id" {
+    type        = string
+    description = "The id of VPC"
+}
+
+variable "cluster_name" {
+    type        = string 
+    description = "The name of the EKS cluster"
+}

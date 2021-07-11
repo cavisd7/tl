@@ -72,10 +72,10 @@ resource "aws_launch_template" "eks_node_template" {
         enabled = false
     }
 
-    network_interfaces {
+    /*network_interfaces {
         # true if ONLY using public EKS endpoint and not using a NAT gateway
         associate_public_ip_address = (var.enable_public_endpoint && !var.enable_private_endpoint) && var.cluster_flavor == "public" ? true : var.map_public_ip
-    }
+    }*/
 
     vpc_security_group_ids = [aws_security_group.worker_node_sg.id]
 

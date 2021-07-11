@@ -10,11 +10,12 @@ import (
 func TestPrivatePublicVPC(t *testing.T) {
 	t.Parallel()
 
+	defaultSubnetCount := 2
+
 	vpcCIDR := "10.0.0.0/16"
 	vpcTags := map[string]string{
 		"kubernetes.io/cluster/myCluster": "shared",
 	} 
-	subnetCount := 2
 	publicSubnetTags := map[string]string{
 		"myTag": "myValue",
 	}
@@ -24,7 +25,6 @@ func TestPrivatePublicVPC(t *testing.T) {
 		Vars: map[string]interface{}{
 			"vpc_cidr": vpcCIDR, 
 			"vpc_tags": vpcTags,
-			"subnet_count": subnetCount,
 			"public_subnet_tags": publicSubnetTags, 
 		},
 	})
@@ -38,5 +38,5 @@ func TestPrivatePublicVPC(t *testing.T) {
 	actualPublicSubnetIds := terraform.OutputList(t, tfOptions, "public_subnet_ids")
 
 	assert.Equal(t, vpcTags, actualVpcTags)
-	assert.Equal(t, subnetCount * 2, len(actualPrivateSubnetIds) + len(actualPublicSubnetIds))
+	assert.Equal(t, defaultSubnetCount * 2, len(actualPrivateSubnetIds) + len(actualPublicSubnetIds))
 }

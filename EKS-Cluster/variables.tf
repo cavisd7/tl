@@ -17,10 +17,10 @@ variable "cluster_flavor" {
     } 
 }
 
-variable "subnet_ids" {
+/*variable "subnet_ids" {
     type        = list(string)
     description = "List of subnet ids where EKS will deploy worker nodes"
-}
+}*/
 
 variable "cluster_log_types" {
     type        = list(string)

@@ -24,9 +24,17 @@ resource "aws_eks_cluster" "eks_cluster" {
     vpc_config {
         subnet_ids              = var.subnet_ids
         endpoint_private_access = var.enable_private_endpoint
-        endpoint_public_access  = var.enable_public_endpoint
+        endpoint_public_access  = var.cluster_flavor == "private" ? false : var.enable_public_endpoint
         public_access_cidrs     = var.enable_public_endpoint ? var.allowed_eks_endpoint_cidrs : null
     }
+}
+
+module "cluster_subnets" {
+    source          = "./modules/eks-subnets/"
+
+    vpc_id          = var.vpc_id
+    cluster_name    = var.cluster_name
+    cluster_flavor  = var.cluster_flavor
 }
 
 module "worker_nodes" {
@@ -35,5 +43,5 @@ module "worker_nodes" {
     vpc_id          = var.vpc_id
     cluster_name    = var.cluster_name
     node_group_name = var.node_group_name
-    subnet_ids      = var.subnet_ids
+    subnet_ids      = module.cluster_subnets.subnet_ids
 }
